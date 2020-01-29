@@ -71,30 +71,44 @@ function runSearch() {
 
 function addEmployees() {
   inquirer
-  .prompt(
+    .prompt(
       {
-         type: "input",
-         name: "first name",
-         message: "What is the employees first name?"
+        type: "input",
+        name: "first name",
+        message: "What is the employees first name?"
       },
       {
-          type: "input",
-          name: "last name",
-          message: "What is the employees last name?"
+        type: "input",
+        name: "last name",
+        message: "What is the employees last name?"
       },
       {
-          type: "input",
-          name: "role",
-          message: "What is the employees role?"
+        type: "input",
+        name: "role",
+        message: "What is the employees role?"
       },
       {
-          type: "input",
-          name: "manager",
-          message: "Who is the employees manager?"
+        type: "input",
+        name: "manager",
+        message: "Who is the employees manager?"
       }
-  )
+    )
 }
 function viewEmployee() {
+  inquirer
+    .prompt({
+      type: "list",
+      name:"viewEmployee",
+      message: "Which Employee would you like to view?",
+      choices: [
+        "Billy", "Brown",
+        "Georgia", "Scott",
+        "Liam", "Barnes", 
+        "Sierra", "Brimmer",
+        "Tre", "Daniels", 
+        "Baylor", "Anderson",
+      ]
+    })
 
 }
 
@@ -103,17 +117,63 @@ function updateEmployee() {
 }
 
 function addRole() {
+  inquirer
+    .prompt({
+      type: "input",
+      name: "role",
+      message: "what role would you like to add?"
+    })
 
 }
 
-function viewRole() {
-
+function viewRoles() {
+  inquirer
+    .prompt({
+      type: "list",
+      name: "role",
+      message: "Which roles would you like to view?",
+      choices: [
+        "Accountant",
+        "Sales Manager",
+        "Graphic Design",
+        "Sales Associate",
+        "I.T. Specialist",
+        "Production Management"
+      ]
+    })
+    .then(function (answer) {
+      const query = "SELECT role FROM employeesDB";
+      connection.query(query, { role: answer.role }, function (err, res) {
+        for (var i = 0; i < res.length; i++) {
+          console.log(role)
+        }
+      })
+    })
 }
 
 function addDepartment() {
 
 }
 
-function viewDepartment() {
-
-}
+function viewDepartments() {
+  inquirer
+    .prompt({
+      type: "list",
+      name: "departments",
+      message: "Which department would you like to view?",
+      choices: [
+        "Accounting",
+        "Marketing",
+        "Sales",
+        "IT",
+      ]
+    })
+    .then(function (answer) {
+      const query = "SELECT department FROM cms_db";
+      connection.query(query, { department: answer.department }, function (err, res) {
+        for (var i = 0; i < res.length; i++) {
+          console.log(department)
+        }
+      })
+    })
+};
