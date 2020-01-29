@@ -201,3 +201,7 @@ function viewDepartments() {
 runSearch();
 viewEmployee();
 viewRoles();
+viewDepartments();
+addDepartment();
+addRole();
+addEmployees();
