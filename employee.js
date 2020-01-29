@@ -98,23 +98,38 @@ function viewEmployee() {
   inquirer
     .prompt({
       type: "list",
-      name:"viewEmployee",
+      name: "viewEmployee",
       message: "Which Employee would you like to view?",
       choices: [
         "Billy", "Brown",
         "Georgia", "Scott",
-        "Liam", "Barnes", 
+        "Liam", "Barnes",
         "Sierra", "Brimmer",
-        "Tre", "Daniels", 
+        "Tre", "Daniels",
         "Baylor", "Anderson",
       ]
     })
+    .then(function (answer) {
+      var query = "SELECT employees.employee";
+      query += "FROM employees"
 
+      connection.query(query, [answer.employee, answer.employee], function (err, res) {
+        console.log(res.length + "view employee");
+        for (var i = 0; i < res.length; i++) {
+          console.log("Employee: " + res[i].employee);
+        }
+      });
+    });
 }
+// function updateEmployee() {
+//   inquirer
+//     .prompt({
+//       type: "input",
+//       name:"updateEmployee",
+//       message: "What would you like to update on an existing employee?"
+// //     })
 
-function updateEmployee() {
-
-}
+// }
 
 function addRole() {
   inquirer
@@ -143,7 +158,7 @@ function viewRoles() {
     })
     .then(function (answer) {
       const query = "SELECT role FROM employeesDB";
-      connection.query(query, { role: answer.role }, function (err, res) {
+      connection.query(query,[answer.role], function (err, res) {
         for (var i = 0; i < res.length; i++) {
           console.log(role)
         }
@@ -152,6 +167,12 @@ function viewRoles() {
 }
 
 function addDepartment() {
+  inquirer
+    .prompt({
+      type: "input",
+      name: "department",
+      message: "what department would you like to add?"
+    })
 
 }
 
@@ -169,11 +190,14 @@ function viewDepartments() {
       ]
     })
     .then(function (answer) {
-      const query = "SELECT department FROM cms_db";
-      connection.query(query, { department: answer.department }, function (err, res) {
-        for (var i = 0; i < res.length; i++) {
+      const query = "SELECT department FROM employeeDB";
+      connection.query(query, [answer.department.department], function (err, res) {
+        for (var i = 0; i < res.length.department; i++) {
           console.log(department)
         }
       })
     })
 };
+runSearch();
+viewEmployee();
+viewRoles();
