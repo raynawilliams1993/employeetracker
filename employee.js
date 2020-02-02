@@ -5,9 +5,9 @@ const cTable = require("console.table");
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'RKW@1993!'
+    password: 'RKW@1993!',
     port: 3306,
-    database: 'roster'
+    database: 'employeeDB'
 });
 
 connection.connect(function(err) {
@@ -96,7 +96,7 @@ function addEmployee() {
                 first_name: answers.first_name,
                 last_name: answers.last_name,
                 roleID: answers.roleID,
-                manager_id: answers.manager_id || NULL
+                manager_id: answers.manager_id 
             },
 
             function(err) {
@@ -157,10 +157,10 @@ function viewEmployee() {
                 choices: function() {
                     var choiceArray = [];
                     for (var i = 0; i < results.length; i++) {
-                        console.table(results[i]);
+                        Console.table(results[i]);
                       choiceArray.push(results[i].first_name);
                     }
-                    console.table(choiceArray);
+                    Console.table(choiceArray);
                     return choiceArray;
                 },
                 message: "Please select an employee to view"

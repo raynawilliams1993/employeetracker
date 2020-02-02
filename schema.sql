@@ -19,8 +19,8 @@ department_id INT NULL
 CREATE TABLE employee(
 first_name VARCHAR(30) NOT NULL,
 last_name VARCHAR(30) NOT NULL,
-role_id INT NOT NULL,
-manager_id INT NULL
+roleID INT NOT NULL,
+manager_I INT NULL
 );
 
 INSERT INTO department (name) VALUES ("Accounting"), ("Marketing"), ("Sales"), ("IT");
