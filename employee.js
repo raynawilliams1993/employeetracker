@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
     database: 'employeeDB'
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) throw err;
     init();
 });
@@ -30,38 +30,38 @@ function init() {
             "View a department",
             "Quit"
         ]
-    }).then(function(answer) {
+    }).then(function (answer) {
         switch (answer.action) {
             case "Add an employee":
-              addEmployee();
-              break;
+                addEmployee();
+                break;
 
             case "View an employee":
-              viewEmployee();
-              break;
+                viewEmployee();
+                break;
 
             case "Update an employee":
-              updateEmployee();
-              break;
+                updateEmployee();
+                break;
 
             case "Add a role":
-              addRole();
-              break;
+                addRole();
+                break;
 
             case "View a role":
-              viewRole();
-              break;
+                viewRole();
+                break;
 
             case "Add a department":
-              addDepartment();
-              break;
+                addDepartment();
+                break;
 
             case "View a department":
-              viewDepartment();
-              break;
+                viewDepartment();
+                break;
 
             case "Quit":
-              connection.end();
+                connection.end();
         }
     });
 
@@ -89,139 +89,113 @@ function addEmployee() {
             type: "input",
             message: "Please enter the employee's manager's ID number. Press enter if the employee has no manager."
         }
-    ]).then(function(answers) {
+    ]).then(function (answers) {
+        var manager = answers.manager_id
+        if (manager == "") {
+            manager = null
+        }
+
         connection.query(
             "INSERT INTO employee SET ?",
             {
                 first_name: answers.first_name,
                 last_name: answers.last_name,
-                roleID: answers.roleID,
-                manager_id: answers.manager_id 
+                role_id: answers.roleID,
+                manager_id: manager
             },
 
-            function(err) {
+            function (err) {
                 if (err) throw err;
-                inquirer.prompt([
-                    {
-                        name: "title",
-                        type: "input",
-                        message: "Please enter the employee's title."
-                    },
-                    {
-                        name: "salary",
-                        type: "input",
-                        message: "Please enter the employee's salary."
-                    }   
-                ]).then(function(answers) {
-                    connection.query(
-                        "INSERT INTO role SET ?",
-                        {
-                            title: answers.title,
-                            salary: answers.salary
-                        },
+                init();
 
-                        function(err) {
-                            if (err) throw err;
-                            inquirer.prompt({
-                                name: "department_id",
-                                type: "input",
-                                message: "Please enter the department ID number.",
-                            }).then(function(answer) {
-                                connection.query(
-                                    "INSERT INTO department SET ?",
-                                    {
-                                        name: answer.department_id
-                                    },
-
-                                    function(err) {
-                                        if (err) throw err;
-                                        init();
-                                    });
-                            });
-                        });
-                });
-                
             }
         );
     });
-    
+
 }
 
 function viewEmployee() {
-    connection.query("SELECT * FROM employee", function(err, results) {
+    connection.query("SELECT * FROM employee", function (err, results) {
         if (err) throw err;
         inquirer.prompt([
             {
                 name: "choice",
                 type: "rawlist",
-                choices: function() {
+                choices: function () {
                     var choiceArray = [];
                     for (var i = 0; i < results.length; i++) {
-                        Console.table(results[i]);
-                      choiceArray.push(results[i].first_name);
+                        // console.table(results[i]);
+                        choiceArray.push(results[i].first_name);
                     }
-                    Console.table(choiceArray);
+                    // console.table(choiceArray);
                     return choiceArray;
                 },
                 message: "Please select an employee to view"
             }
-        ]).then(function(answer) {
+        ]).then(function (answer) {
+            var choice = results.filter(row => row.first_name === answer.choice)[0]
+            console.table(choice);
 
-            console.table(answer);
-            inquirer.prompt({
-                name: "clear",
-                type: "boolean",
-                message: "Press enter key to continue"
-            }).then(function(answer) {
-                init();
-            });
-            });
+            init();
+
+        });
 
     });
 
 }
 
 function updateEmployee() {
-    connection.query("SELECT * FROM employee", function(err, results) {
+    connection.query("SELECT * FROM employee", function (err, results) {
         if (err) throw err;
         inquirer.prompt([
             {
                 name: "choice",
                 type: "rawlist",
-                choices: function() {
+                choices: function () {
                     var choiceArray = [];
                     for (var i = 0; i < results.length; i++) {
-                        console.table(results[i]);
-                      choiceArray.push(results[i].first_name);
+                        // console.table(results[i]);
+                        choiceArray.push(results[i].first_name);
                     }
-                    console.table(choiceArray);
+                    // console.table(choiceArray);
                     return choiceArray;
-                },
+                }, 
                 message: "Please select an employee to update"
+        }, {
+                name: "column",
+                type: "rawlist",
+                choices: ["first_name", "last_name", "role_id", "manager_id"],
+                message: "what would you like to update?"    
+        }, {
+            name: "update",
+            type: "input",
+            message: "Enter updated employee information"
+        } 
+        ]).then(function (answer) {
+            // var chosenItem;
+            // for (var i = 0; i < results.length; i++) {
+            //     if (results[i].first_name === answer.choice) {
+            //         chosenItem = results[i];
+            //         // console.log(chosenItem.title);
+            //     } use a filter on this section instead of a for loop
             }
-        ]).then(function(answer) {
-                var chosenItem;
-                for (var i = 0; i < results.length; i++) {
-                  if (results[i].first_name === answer.choice) {
-                    chosenItem = results[i];
-                  }
-                  console.log(chosenItem.title);
-                  connection.query(
-                    "UPDATE role SET ? WHERE ?",
-                    [
-                        {
-                            title: answer.title
-                        },
-                        {
-                            id: chosenItem.id
-                        }
-                    ],
-                    function (error) {
-                        if (error) throw error;
-                        init();
-                    });
-                }
-            });
+            var update = {};
+            update[answer.column] = answer.update
+            connection.query(
+                "UPDATE employee SET ? WHERE ?",
+                [
+                    update,
+                    {
+                        first_name: chosenItem.first_name
+                    }
+                ],
+                function (error) {
+                    if (error) throw error;
+                    console.log("employee updated!")
+                    init();
+                    
+                });
+        });
 
     });
 }
@@ -243,48 +217,48 @@ function addRole() {
             name: "new_deptID",
             message: "What is the department ID for the new role?"
         }
-]).then(function(answer) {
+    ]).then(function (answer) {
         connection.query("INSERT INTO role SET ?",
-        {
-            title: answer.new_role,
-            salary: answer.new_salary,
-            department_id: answer.new_deptID
-        },
-        function(err) {
-            if (err) throw err;
-            console.log("New role was added successfully!");
-            init();
-        });
+            {
+                title: answer.new_role,
+                salary: answer.new_salary,
+                department_id: answer.new_deptID
+            },
+            function (err) {
+                if (err) throw err;
+                console.log("New role was added successfully!");
+                init();
+            });
     });
 
 }
 
 function viewRole() {
-    connection.query("SELECT * FROM role", function(err, results) {
+    connection.query("SELECT * FROM role", function (err, results) {
         if (err) throw err;
         inquirer.prompt([
             {
                 name: "choice",
                 type: "rawlist",
-                choices: function() {
+                choices: function () {
                     var choiceArray = [];
                     for (var i = 0; i < results.length; i++) {
                         console.table(results[i]);
-                      choiceArray.push(results[i].title);
+                        choiceArray.push(results[i].title);
                     }
                     console.table(choiceArray);
                     return choiceArray;
                 },
                 message: "Please select a role to view"
             }
-        ]).then(function(answers) {
+        ]).then(function (answers) {
             console.table(answers);
-            
+
             inquirer.prompt({
                 name: "clear",
                 type: "boolean",
                 message: "Press enter key to continue"
-            }).then(function(answer) {
+            }).then(function (answer) {
                 init();
             });
         });
@@ -297,45 +271,45 @@ function addDepartment() {
         type: "input",
         name: "new_department",
         message: "Please enter the new department name."
-    }).then(function(answer) {
+    }).then(function (answer) {
         connection.query("INSERT INTO department SET ?",
-        {
-            name: answer.new_department
-        },
-        function(err) {
-            if (err) throw err;
-            console.log("New department was added successfully!")
-            init();
-        });
+            {
+                name: answer.new_department
+            },
+            function (err) {
+                if (err) throw err;
+                console.log("New department was added successfully!")
+                init();
+            });
     });
 }
 
 function viewDepartment() {
-    connection.query("SELECT * FROM department", function(err, results) {
+    connection.query("SELECT * FROM department", function (err, results) {
         if (err) throw err;
         inquirer.prompt([
             {
                 name: "choice",
                 type: "rawlist",
-                choices: function() {
+                choices: function () {
                     var choiceArray = [];
                     for (var i = 0; i < results.length; i++) {
                         console.table(results[i]);
-                      choiceArray.push(results[i].title);
+                        choiceArray.push(results[i].title);
                     }
                     console.table(choiceArray);
                     return choiceArray;
                 },
                 message: "Please select a department to view"
             }
-        ]).then(function(answers) {
+        ]).then(function (answers) {
             console.table(answers);
-            
+
             inquirer.prompt({
                 name: "clear",
                 type: "boolean",
                 message: "Press enter key to continue"
-            }).then(function(answer) {
+            }).then(function (answer) {
                 init();
             });
         });
